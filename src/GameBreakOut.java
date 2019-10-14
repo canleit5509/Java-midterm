@@ -8,7 +8,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-public class GameBreakOut extends JFrame implements KeyListener{
+public class GameBreakOut extends JFrame implements KeyListener {
 	public static void main(String[] args) {
 		new GameBreakOut();
 	}
@@ -16,10 +16,14 @@ public class GameBreakOut extends JFrame implements KeyListener{
 	// Start Variable
 	int w = 700;
 	int h = 500;
-	int rec_w = 25;
-	int rec_h = 10;
+	int rec_w = 60;
+	int rec_h = 30;
+	int brickperrow = 9;
+	int brickpercol = 5;
+	int of = 10;
 	Graphics g;
 	Ball b;
+	Brick brick[][] = new Brick[brickperrow][brickpercol];
 	BufferedImage bufImg;
 	// End Variable
 
@@ -31,7 +35,11 @@ public class GameBreakOut extends JFrame implements KeyListener{
 		Random random = new Random();
 		b = new Ball(350, 450, 13, random.nextDouble() * 5 - 2, 1.5, this);
 		b.start();
-
+		for (int i = 0; i < brickperrow; i++) {
+			for (int j = 0; j < brickpercol; j++) {
+				brick[i][j] = new Brick(30 + i * (rec_w + of), 50 + j * (rec_h + of), this);
+			}
+		}
 		bufImg = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
 		g = bufImg.getGraphics();
 		this.setVisible(true);
@@ -49,7 +57,11 @@ public class GameBreakOut extends JFrame implements KeyListener{
 		g.setColor(Color.blue);
 		g.fillOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
 		g.drawOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
-
+		for (int i = 0; i < brickperrow; i++) {
+			for (int j = 0; j < brickpercol; j++) {
+				g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
+			}
+		}
 		g1.drawImage(bufImg, 0, 0, this.getWidth(), this.getHeight(), null);
 
 		try {
@@ -64,10 +76,10 @@ public class GameBreakOut extends JFrame implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-			// dich chuyen thanh sang trai  
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			// dich chuyen thanh sang trai
 		}
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			// dich chuyen thanh sang phai
 		}
 	}
@@ -75,13 +87,13 @@ public class GameBreakOut extends JFrame implements KeyListener{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
 
@@ -109,9 +121,9 @@ class Ball extends Thread {
 				vy = -vy;
 			}
 
-			//TODO: Tang toc sau moi lan an bong;
+			// TODO: Tang toc sau moi lan an bong;
 
-			//TODO: Neu cham vao bottom -> endgame
+			// TODO: Neu cham vao bottom -> endgame --> v = 0
 
 			// Delay mot time nho
 			try {
@@ -125,12 +137,20 @@ class Ball extends Thread {
 }
 
 class Panel extends Thread {
-	
+
 }
 
 class Brick extends Thread {
-	
+	double x, y;
+	GameBreakOut gb;
+
+	public Brick(double x, double y, GameBreakOut gb) {
+		this.x = x;
+		this.y = y;
+		this.gb = gb;
+	}
 }
+
 // Class Vector
 class MyVector {
 	double x, y;
