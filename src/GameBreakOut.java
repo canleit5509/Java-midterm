@@ -16,7 +16,7 @@ public class GameBreakOut extends JFrame implements KeyListener{
 	// Start Variable
 	int w = 700;
 	int h = 500;
-	int rec_w = 20;
+	int rec_w = 25;
 	int rec_h = 10;
 	Graphics g;
 	Ball b;
@@ -62,19 +62,24 @@ public class GameBreakOut extends JFrame implements KeyListener{
 	}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+			// dich chuyen thanh sang trai  
+		}
+		if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			// dich chuyen thanh sang phai
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -104,9 +109,9 @@ class Ball extends Thread {
 				vy = -vy;
 			}
 
-			// Tang toc sau moi lan an bong;
+			//TODO: Tang toc sau moi lan an bong;
 
-			// Neu cham vao bottom -> endgame
+			//TODO: Neu cham vao bottom -> endgame
 
 			// Delay mot time nho
 			try {
