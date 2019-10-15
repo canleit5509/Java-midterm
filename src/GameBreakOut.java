@@ -25,43 +25,62 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	Ball b;
 	Brick brick[][] = new Brick[brickperrow][brickpercol];
 	BufferedImage bufImg;
+	Panel panel;
+	int panel_w = 100;
+	int panel_h = 30;
 	// End Variable
 
 	public GameBreakOut() {
 		this.setTitle("Game Break Out");
 		this.setSize(w, h);
 		this.setDefaultCloseOperation(3);
-
+		// Create Panel
+		panel = new Panel(350, 450, this);
+		panel.start();
+		// Create Ball
 		Random random = new Random();
 		b = new Ball(350, 450, 13, random.nextDouble() * 5 - 2, 1.5, this);
 		b.start();
+
+		// Create Brick
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
 				brick[i][j] = new Brick(30 + i * (rec_w + of), 50 + j * (rec_h + of), this);
 			}
 		}
+
 		bufImg = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
 		g = bufImg.getGraphics();
 		this.setVisible(true);
 		// Add cac su kien
-
+		this.addKeyListener(this);
 		//
 	}
 
 	public void paint(Graphics g1) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		// Set graphics for panel
+		g.setColor(Color.black);
+		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
+		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
+		
+		// Set graphics for brick
+		for (int i = 0; i < brickperrow; i++) {
+			for (int j = 0; j < brickpercol; j++) {
+				if(brick[i][j].exist) {
+					g.setColor(Color.gray);
+					g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
+					g.fillRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
+				}
+			}
+		}
 
-		// Set graphics cho ball
-
+		// Set graphics for ball
 		g.setColor(Color.blue);
 		g.fillOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
 		g.drawOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
-		for (int i = 0; i < brickperrow; i++) {
-			for (int j = 0; j < brickpercol; j++) {
-				g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
-			}
-		}
+
 		g1.drawImage(bufImg, 0, 0, this.getWidth(), this.getHeight(), null);
 
 		try {
@@ -75,18 +94,20 @@ public class GameBreakOut extends JFrame implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			// dich chuyen thanh sang trai
+			System.out.println("Left");
+			panel.vx = -2;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			// dich chuyen thanh sang phai
+			System.out.println("Right");
+			panel.vx = 2;
 		}
+		repaint();
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		panel.vx = 0;
 
 	}
 
@@ -120,7 +141,23 @@ class Ball extends Thread {
 			if (y - r <= 0 || y + r >= gb.h) {
 				vy = -vy;
 			}
-
+			
+			// When Ball touch brick
+			for (int i = 0; i < gb.brickperrow; i++) {
+				for (int j =0; j < gb.brickpercol; j++) {
+					Brick br = gb.brick[i][j];
+					// Xu ly hinh tron cham hinh chu nhat
+					
+					
+					if(gb.brick[i][j].exist) {
+						System.out.println("Cham");
+						gb.brick[i][j].exist = false;
+						
+					}
+					
+				}
+			}
+			
 			// TODO: Tang toc sau moi lan an bong;
 
 			// TODO: Neu cham vao bottom -> endgame --> v = 0
@@ -136,18 +173,54 @@ class Ball extends Thread {
 	}
 }
 
-class Panel extends Thread {
+// Class Panel
+class Panel extends Thread{
+	double x, y;
+	GameBreakOut gb;
+	double vx;
 
+	public Panel(double x, double y, GameBreakOut gb) {
+		this.x = x;
+		this.y = y;
+		this.vx = 0;
+		this.gb = gb;
+	}
+
+	public void run() {
+		while(true) {
+			this.x += vx;
+			try {
+				Thread.sleep(6);
+			} catch (InterruptedException e) {
+				// TODO: handle exception
+			}
+		}
+	}
 }
+
 
 class Brick extends Thread {
 	double x, y;
+	boolean exist;
 	GameBreakOut gb;
 
 	public Brick(double x, double y, GameBreakOut gb) {
 		this.x = x;
 		this.y = y;
 		this.gb = gb;
+		this.exist = true;
+	}
+}
+
+// Class Point
+class MyPoint{
+	double x,y;
+	MyPoint(double x, double y){
+		this.x = x;
+		this.y = y;
+	}
+	public double Distance(MyPoint p) {
+		return Math.sqrt(Math.pow((this.x - p.x), 2) + Math.pow((this.y - p.y), 2));
 	}
 }
 
