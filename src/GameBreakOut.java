@@ -64,11 +64,11 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.black);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
-		
+
 		// Set graphics for brick
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
-				if(brick[i][j].exist) {
+				if (brick[i][j].exist) {
 					g.setColor(Color.gray);
 					g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
 					g.fillRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
@@ -121,6 +121,8 @@ public class GameBreakOut extends JFrame implements KeyListener {
 class Ball extends Thread {
 	double x, y, r, vx, vy;
 	GameBreakOut gb;
+	int rec_w = 60;
+	int rec_h = 30;
 
 	public Ball(double x, double y, double r, double vx, double vy, GameBreakOut gb) {
 		this.x = x;
@@ -141,23 +143,40 @@ class Ball extends Thread {
 			if (y - r <= 0 || y + r >= gb.h) {
 				vy = -vy;
 			}
-			
+
 			// When Ball touch brick
 			for (int i = 0; i < gb.brickperrow; i++) {
-				for (int j =0; j < gb.brickpercol; j++) {
+				for (int j = 0; j < gb.brickpercol; j++) {
 					Brick br = gb.brick[i][j];
 					// Xu ly hinh tron cham hinh chu nhat
-					
-					
-					if(gb.brick[i][j].exist) {
-						System.out.println("Cham");
-						gb.brick[i][j].exist = false;
-						
+					if (br != null) {
+						if (br.exist) {
+							double px = x;
+							double py = y;
+							if (px < br.x) {
+								px = br.x;
+							}
+							if (px > br.x + rec_w) {
+								px = br.x + rec_w;
+							}
+							if (py < br.y) {
+								py = br.y;
+							}
+							if (py > br.y + rec_h) {
+								py = br.y + rec_h;
+							}
+							double dx = x - px;
+							double dy = y - py;
+							if (dx * dx + dy * dy <= r * r) {
+								gb.brick[i][j].exist = false;
+								// TODO : sua lai cach cham cua bong
+								vy = -vy;
+							}
+						}
 					}
-					
 				}
 			}
-			
+
 			// TODO: Tang toc sau moi lan an bong;
 
 			// TODO: Neu cham vao bottom -> endgame --> v = 0
@@ -174,7 +193,7 @@ class Ball extends Thread {
 }
 
 // Class Panel
-class Panel extends Thread{
+class Panel extends Thread {
 	double x, y;
 	GameBreakOut gb;
 	double vx;
@@ -187,7 +206,7 @@ class Panel extends Thread{
 	}
 
 	public void run() {
-		while(true) {
+		while (true) {
 			this.x += vx;
 			try {
 				Thread.sleep(6);
@@ -197,7 +216,6 @@ class Panel extends Thread{
 		}
 	}
 }
-
 
 class Brick extends Thread {
 	double x, y;
@@ -213,12 +231,14 @@ class Brick extends Thread {
 }
 
 // Class Point
-class MyPoint{
-	double x,y;
-	MyPoint(double x, double y){
+class MyPoint {
+	double x, y;
+
+	MyPoint(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
+
 	public double Distance(MyPoint p) {
 		return Math.sqrt(Math.pow((this.x - p.x), 2) + Math.pow((this.y - p.y), 2));
 	}
