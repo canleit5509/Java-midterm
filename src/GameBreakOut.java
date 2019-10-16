@@ -96,11 +96,19 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			System.out.println("Left");
-			panel.vx = -2;
+			if (panel.x > 0) {
+				panel.vx = -2;
+			} else {
+				panel.vx = 0;
+			}
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
-			panel.vx = 2;
+			if (panel.x + panel_w < w) {
+				panel.vx = 2;
+			} else {
+				panel.vx = 0;
+			}
 		}
 		repaint();
 	}
