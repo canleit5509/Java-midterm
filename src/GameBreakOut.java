@@ -39,7 +39,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		b = new Ball(350, 450, 13, random.nextDouble() * 5 - 2, 1.5, this);
+		b = new Ball(350, 430, 13, random.nextDouble() * 5 - 2.5, 2.5, this);
 		b.start();
 
 		// Create Brick
@@ -121,7 +121,6 @@ public class GameBreakOut extends JFrame implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 }
@@ -156,39 +155,72 @@ class Ball extends Thread {
 			for (int i = 0; i < gb.brickperrow; i++) {
 				for (int j = 0; j < gb.brickpercol; j++) {
 					Brick br = gb.brick[i][j];
-					// Xu ly hinh tron cham hinh chu nhat
-					if (br != null) {
-						if (br.exist) {
-							double px = x;
-							double py = y;
-							if (px < br.x) {
-								px = br.x;
+					// Xu ly hinh tron cham brick
+					if (br != null && br.exist) {
+						double px = x;
+						double py = y;
+						if (px < br.x) {
+							px = br.x;
+						}
+						if (px > br.x + rec_w) {
+							px = br.x + rec_w;
+						}
+						if (py < br.y) {
+							py = br.y;
+						}
+						if (py > br.y + rec_h) {
+							py = br.y + rec_h;
+						}
+						double dx = x - px;
+						double dy = y - py;
+
+						if (dx * dx + dy * dy <= r * r) {
+							gb.brick[i][j].exist = false;
+							// xu li huong khi va cham vao brick
+							if (x + vx < br.x || x + vx > br.x + rec_w) {
+								vx = -vx;
 							}
-							if (px > br.x + rec_w) {
-								px = br.x + rec_w;
-							}
-							if (py < br.y) {
-								py = br.y;
-							}
-							if (py > br.y + rec_h) {
-								py = br.y + rec_h;
-							}
-							double dx = x - px;
-							double dy = y - py;
-							if (dx * dx + dy * dy <= r * r) {
-								gb.brick[i][j].exist = false;
-								// TODO : sua lai cach cham cua bong
+							if (y + vy < br.y || y + vy > br.y + rec_h) {
 								vy = -vy;
 							}
 						}
 					}
+
 				}
 			}
+			if (gb.panel != null) {
+				double px = x;
+				double py = y;
+				if (px < gb.panel.x) {
+					px = gb.panel.x;
+				}
+				if (px > gb.panel.x + rec_w) {
+					px = gb.panel.x + rec_w;
+				}
+				if (py < gb.panel.y) {
+					py = gb.panel.y;
+				}
+				if (py > gb.panel.y + rec_h) {
+					py = gb.panel.y + rec_h;
+				}
+				double dx = x - px;
+				double dy = y - py;
 
-			// TODO: Tang toc sau moi lan an bong;
-
+				if (dx * dx + dy * dy <= r * r) {
+					// xu li huong khi va cham vao brick
+					if (x + vx < gb.panel.x) {
+						vx = -vx;
+					}
+					if (y + vy < gb.panel.y || y + vy > gb.panel.y + rec_h) {
+						vy = -vy;
+					}
+				}
+			}
 			// TODO: Neu cham vao bottom -> endgame --> v = 0
-
+//			if (y > gb.panel.y + gb.panel_h) {
+//				vx = 0;
+//				vy = 0;
+//			}
 			// Delay mot time nho
 			try {
 				Thread.sleep(6);
@@ -204,6 +236,8 @@ class Ball extends Thread {
 class Panel extends Thread {
 	double x, y;
 	GameBreakOut gb;
+	int panel_w = 100;
+	int panel_h = 30;
 	double vx;
 
 	public Panel(double x, double y, GameBreakOut gb) {
@@ -216,6 +250,7 @@ class Panel extends Thread {
 	public void run() {
 		while (true) {
 			this.x += vx;
+
 			try {
 				Thread.sleep(6);
 			} catch (InterruptedException e) {
