@@ -15,7 +15,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 
 	// Start Variable
 	int w = 700;
-	int h = 500;
+	int h = 700;
 	int rec_w = 60;
 	int rec_h = 30;
 	int brickperrow = 9;
@@ -27,7 +27,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	BufferedImage bufImg;
 	Panel panel;
 	int panel_w = 100;
-	int panel_h = 30;
+	int panel_h = 15;
 	// End Variable
 
 	public GameBreakOut() {
@@ -35,7 +35,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		this.setSize(w, h);
 		this.setDefaultCloseOperation(3);
 		// Create Panel
-		panel = new Panel(350, 450, this);
+		panel = new Panel(350, 670, this);
 		panel.start();
 		// Create Ball
 		Random random = new Random();
@@ -128,8 +128,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 class Ball extends Thread {
 	double x, y, r, vx, vy;
 	GameBreakOut gb;
-	int rec_w = 60;
-	int rec_h = 30;
+	
 
 	public Ball(double x, double y, double r, double vx, double vy, GameBreakOut gb) {
 		this.x = x;
@@ -162,14 +161,14 @@ class Ball extends Thread {
 						if (px < br.x) {
 							px = br.x;
 						}
-						if (px > br.x + rec_w) {
-							px = br.x + rec_w;
+						if (px > br.x + gb.rec_w) {
+							px = br.x + gb.rec_w;
 						}
 						if (py < br.y) {
 							py = br.y;
 						}
-						if (py > br.y + rec_h) {
-							py = br.y + rec_h;
+						if (py > br.y + gb.rec_h) {
+							py = br.y + gb.rec_h;
 						}
 						double dx = x - px;
 						double dy = y - py;
@@ -177,10 +176,10 @@ class Ball extends Thread {
 						if (dx * dx + dy * dy <= r * r) {
 							gb.brick[i][j].exist = false;
 							// xu li huong khi va cham vao brick
-							if (x + vx < br.x || x + vx > br.x + rec_w) {
+							if (x + vx < br.x || x + vx > br.x + gb.rec_w) {
 								vx = -vx;
 							}
-							if (y + vy < br.y || y + vy > br.y + rec_h) {
+							if (y + vy < br.y || y + vy > br.y + gb.rec_h) {
 								vy = -vy;
 							}
 						}
@@ -194,14 +193,14 @@ class Ball extends Thread {
 				if (px < gb.panel.x) {
 					px = gb.panel.x;
 				}
-				if (px > gb.panel.x + rec_w) {
-					px = gb.panel.x + rec_w;
+				if (px > gb.panel.x + gb.panel_w) {
+					px = gb.panel.x + gb.panel_w;
 				}
 				if (py < gb.panel.y) {
 					py = gb.panel.y;
 				}
-				if (py > gb.panel.y + rec_h) {
-					py = gb.panel.y + rec_h;
+				if (py > gb.panel.y + gb.panel_h) {
+					py = gb.panel.y + gb.panel_h;
 				}
 				double dx = x - px;
 				double dy = y - py;
@@ -211,7 +210,7 @@ class Ball extends Thread {
 					if (x + vx < gb.panel.x) {
 						vx = -vx;
 					}
-					if (y + vy < gb.panel.y || y + vy > gb.panel.y + rec_h) {
+					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.rec_h) {
 						vy = -vy;
 					}
 				}
@@ -236,8 +235,6 @@ class Ball extends Thread {
 class Panel extends Thread {
 	double x, y;
 	GameBreakOut gb;
-	int panel_w = 100;
-	int panel_h = 30;
 	double vx;
 
 	public Panel(double x, double y, GameBreakOut gb) {
