@@ -26,9 +26,8 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	Brick brick[][] = new Brick[brickperrow][brickpercol];
 	BufferedImage bufImg;
 	Panel panel;
-	int panel_w = 100;
+	int panel_w = 150;
 	int panel_h = 15;
-
 	// End Variable
 
 	public GameBreakOut() {
@@ -36,11 +35,21 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		this.setSize(w, h);
 		this.setDefaultCloseOperation(3);
 		// Create Panel
-		panel = new Panel(350, 670, this);
+		panel = new Panel(350, 680, this);
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		b = new Ball(350, 440, 13, random.nextDouble() * 5 - 2, -1.5, this);
+		double v;
+		do {
+			v = random.nextDouble() * 5 - 2.5;
+			if (v != 0 ) {
+				b = new Ball(350, 680, 13,v , 2.5, this);
+				break;
+			}
+		}while(v == 0);
+		
+		
+		
 		b.start();
 
 		// Create Brick
@@ -103,6 +112,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			} else {
 				panel.vx += 0;
 			}
+			System.out.println(panel.vx);
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
@@ -127,6 +137,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			} else {
 				panel.vx += 0;
 			}
+			System.out.println(panel.vx);
 		}
 		repaint();
 	}
@@ -289,19 +300,6 @@ class Brick extends Thread {
 	}
 }
 
-// Class Point
-class MyPoint {
-	double x, y;
-
-	MyPoint(double x, double y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public double Distance(MyPoint p) {
-		return Math.sqrt(Math.pow((this.x - p.x), 2) + Math.pow((this.y - p.y), 2));
-	}
-}
 
 // Class Vector
 class MyVector {
