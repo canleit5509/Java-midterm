@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -14,6 +13,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	}
 
 	// Start Variable
+
 	int w = 700;
 	int h = 700;
 	int rec_w = 60;
@@ -28,6 +28,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	Panel panel;
 	int panel_w = 100;
 	int panel_h = 15;
+
 	// End Variable
 
 	public GameBreakOut() {
@@ -39,7 +40,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		b = new Ball(350, 430, 13, random.nextDouble() * 5 - 2.5, 2.5, this);
+		b = new Ball(350, 440, 13, random.nextDouble() * 5 - 2, -1.5, this);
 		b.start();
 
 		// Create Brick
@@ -51,6 +52,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 
 		bufImg = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
 		g = bufImg.getGraphics();
+
 		this.setVisible(true);
 		// Add cac su kien
 		this.addKeyListener(this);
@@ -61,7 +63,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		// Set graphics for panel
-		g.setColor(Color.black);
+		g.setColor(Color.DARK_GRAY);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 
@@ -86,28 +88,44 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
-			// TODO: lam gi do
 		}
 
 		repaint();
 	}
 
+	// TODO: sua lai van toc cua panel
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			System.out.println("Left");
-			if (panel.x > 0) {
-				panel.vx = -2;
+			if (-panel.vx <= 2) {
+				panel.vx -= 2;
 			} else {
-				panel.vx = 0;
+				panel.vx += 0;
 			}
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
-			if (panel.x + panel_w < w) {
-				panel.vx = 2;
+			if (panel.vx <= 2) {
+				panel.vx += 2;
 			} else {
-				panel.vx = 0;
+				panel.vx += 0;
+			}
+		}
+		if (e.getKeyCode() == KeyEvent.VK_A) {
+			System.out.println("Left");
+			if (-panel.vx <= 2) {
+				panel.vx -= 2;
+			} else {
+				panel.vx += 0;
+			}
+		}
+		if (e.getKeyCode() == KeyEvent.VK_D) {
+			System.out.println("Right");
+			if (panel.vx <= 2) {
+				panel.vx += 2;
+			} else {
+				panel.vx += 0;
 			}
 		}
 		repaint();
@@ -128,7 +146,6 @@ public class GameBreakOut extends JFrame implements KeyListener {
 class Ball extends Thread {
 	double x, y, r, vx, vy;
 	GameBreakOut gb;
-	
 
 	public Ball(double x, double y, double r, double vx, double vy, GameBreakOut gb) {
 		this.x = x;
@@ -156,8 +173,8 @@ class Ball extends Thread {
 					Brick br = gb.brick[i][j];
 					// Xu ly hinh tron cham brick
 					if (br != null && br.exist) {
-						double px = x;
-						double py = y;
+						double px = x + vx;
+						double py = y + vy;
 						if (px < br.x) {
 							px = br.x;
 						}
@@ -187,9 +204,10 @@ class Ball extends Thread {
 
 				}
 			}
+			// when touching panel
 			if (gb.panel != null) {
-				double px = x;
-				double py = y;
+				double px = x + vx;
+				double py = y + vy;
 				if (px < gb.panel.x) {
 					px = gb.panel.x;
 				}
@@ -204,27 +222,26 @@ class Ball extends Thread {
 				}
 				double dx = x - px;
 				double dy = y - py;
-
+				// TODO: xu li van toc khi cham vao thanh
 				if (dx * dx + dy * dy <= r * r) {
 					// xu li huong khi va cham vao brick
 					if (x + vx < gb.panel.x) {
-						vx = -vx;
+						vx = -(vx + Math.abs(gb.panel.vx) / (vx * vx + vy * vy));
 					}
 					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.rec_h) {
-						vy = -vy;
+						vy = -Math.abs(vy + Math.abs(gb.panel.vx) / (vx * vx + vy * vy));
 					}
 				}
 			}
-			// TODO: Neu cham vao bottom -> endgame --> v = 0
-//			if (y > gb.panel.y + gb.panel_h) {
-//				vx = 0;
-//				vy = 0;
-//			}
+			if (y + vy > gb.panel.y + gb.panel_h) {
+
+				vx = 0;
+				vy = 0;
+			}
 			// Delay mot time nho
 			try {
-				Thread.sleep(6);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
-				// TODO: handle exception
 			}
 			//
 		}
@@ -246,12 +263,14 @@ class Panel extends Thread {
 
 	public void run() {
 		while (true) {
-			this.x += vx;
-
+			// dieu kien dung cua panel
+			if (this.x + this.vx > 0 && this.x + this.vx + gb.panel_w < gb.w) {
+				this.x += vx;
+			}
 			try {
-				Thread.sleep(6);
+				Thread.sleep(3);
 			} catch (InterruptedException e) {
-				// TODO: handle exception
+
 			}
 		}
 	}
