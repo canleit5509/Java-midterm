@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -28,6 +29,9 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	Panel panel;
 	int panel_w = 150;
 	int panel_h = 15;
+	boolean checkToStart = false;
+	Color color[] = { Color.BLACK, Color.GRAY, Color.ORANGE, Color.RED, Color.YELLOW, Color.CYAN };
+	boolean checkLife = true;
 	// End Variable
 
 	public GameBreakOut() {
@@ -36,7 +40,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		this.setDefaultCloseOperation(3);
 		// Create Panel
 		panel = new Panel(350, 680, this);
-		panel.start();
+		// panel.start();
 		// Create Ball
 		Random random = new Random();
 		double v;
@@ -47,8 +51,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 				break;
 			}
 		} while (v == 0);
-
-		b.start();
+		// b.start();
 
 		// Create Brick
 		for (int i = 0; i < brickperrow; i++) {
@@ -78,7 +81,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
 				if (brick[i][j].exist) {
-					g.setColor(Color.gray);
+					g.setColor(color[j]);
 					g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
 					g.fillRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
 
@@ -91,8 +94,23 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.fillOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
 		g.drawOval((int) (b.x - b.r), (int) (b.y - b.r), (int) (b.r * 2), (int) (b.r * 2));
 
+		// Press Any Key To Start
+		if (checkToStart == false) {
+			g.setFont(new Font("TimesRoman", Font.BOLD, 40));
+			g.setColor(Color.gray);
+			g.drawString("Press Any Key To Start", w / 2 - "Press Any Key To Start".length() * 9, h / 2);
+		}
+		// End Game
+		if (checkLife == false) {
+			g.setFont(new Font("TimesRoman", Font.BOLD, 40));
+			g.setColor(Color.gray);
+			g.drawString("YOU DIED", w / 2 - "YOU DIED".length() * 9, h / 2);
+			repaint();
+		}
+
 		g1.drawImage(bufImg, 0, 0, this.getWidth(), this.getHeight(), null);
 
+		// To delay
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
@@ -104,17 +122,20 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	// TODO: sua lai van toc cua panel
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if (checkToStart == false) {
+			checkToStart = true;
+			panel.start();
+			b.start();
+		}
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			System.out.println("Left");
 			panel.vx = -2;
 		}
+
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
 			panel.vx = 2;
-
 		}
-
-		System.out.println(panel.vx);
 		repaint();
 	}
 
@@ -144,7 +165,7 @@ class Ball extends Thread {
 	}
 
 	public void run() {
-		while (true) {
+		while (this.gb.checkLife) {
 			x = x + vx;
 			y = y + vy;
 			if (x - r <= 0 || x + r >= gb.w) {
@@ -206,24 +227,22 @@ class Ball extends Thread {
 				if (py > gb.panel.y + gb.panel_h) {
 					py = gb.panel.y + gb.panel_h;
 				}
-				double dx = x - px;
-				double dy = y - py;
+				double dx = this.x - px;
+				double dy = this.y - py;
 				// TODO: xu li van toc khi cham vao thanh
 				if (dx * dx + dy * dy <= r * r) {
 					// xu li huong khi va cham vao brick
 					if (x + vx < gb.panel.x) {
-						vx = -(vx + (gb.panel.vx) / (vx * vx + vy * vy));
+						this.vx = -(this.vx + this.gb.panel.vx / (this.vx * this.vx + this.vy * this.vy));
 					}
 					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.rec_h) {
-						vy = -Math.abs(vy);
+						this.vy = -Math.abs(vy);
 					}
 				}
 			}
 			// TODO: ENDGAME
-			if (y + vy >= gb.h - gb.panel_h) {
-
-				vx = 0;
-				vy = 0;
+			if (this.y + this.vy >= this.gb.h - this.gb.panel_h) {
+				this.gb.checkLife = false;
 			}
 			// Delay mot time nho
 			try {
@@ -249,11 +268,12 @@ class Panel extends Thread {
 	}
 
 	public void run() {
-		while (true) {
-			// dieu kien dung cua panel
+		while (this.gb.checkLife) {
+			// Dieu kien dung cua panel
 			if (this.x + this.vx > 0 && this.x + this.vx + gb.panel_w < gb.w) {
 				this.x += vx;
 			}
+			// Delay
 			try {
 				Thread.sleep(2);
 			} catch (InterruptedException e) {
@@ -273,39 +293,5 @@ class Brick extends Thread {
 		this.y = y;
 		this.gb = gb;
 		this.exist = true;
-	}
-}
-
-// Class Vector
-class MyVector {
-	double x, y;
-
-	MyVector(double x, double y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public MyVector Add(MyVector v) {
-		return new MyVector(this.x + v.x, this.y + v.y);
-	}
-
-	public MyVector Sub(MyVector v) {
-		return new MyVector(this.x - v.x, this.y - v.y);
-	}
-
-	public double dotP(MyVector v) {
-		return this.x * v.x + this.y * v.y;
-	}
-
-	public double length() {
-		return Math.sqrt(x * x + y * y);
-	}
-
-	public MyVector Mult(double l) {
-		return new MyVector(x * l, y * l);
-	}
-
-	public MyVector Norm() {
-		return Mult(1.0 / this.length());
 	}
 }
