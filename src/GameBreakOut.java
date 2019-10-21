@@ -40,7 +40,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		this.setSize(w, h);
 		this.setDefaultCloseOperation(3);
 		// Create Panel
-		panel = new Panel(350, 680, this);
+		panel = new Panel((w/2 - panel_w/2), 680, this);
 		// panel.start();
 		// Create Ball
 		Random random = new Random();
