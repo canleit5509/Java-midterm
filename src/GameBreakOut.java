@@ -39,10 +39,9 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		double u, v;
+		double v;
 		do {
 			v = random.nextDouble() * 5 - 2.5;
-			u = random.nextDouble() * 5 - 2.5;
 			if (v != 0) {
 				b = new Ball(350, 680, 13, v, -1.5, this);
 				break;
@@ -74,7 +73,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.DARK_GRAY);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
-		
+
 		// Set graphics for brick
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
@@ -107,20 +106,14 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			System.out.println("Left");
-			if (-panel.vx <= 2) {
-				panel.vx -= 2;
-			} else {
-				panel.vx += -0.2;
-			}
+			panel.vx = -2;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
-			if (panel.vx <= 2) {
-				panel.vx += 2;
-			} else {
-				panel.vx += 0.2;
-			}
+			panel.vx = 2;
+
 		}
+
 		System.out.println(panel.vx);
 		repaint();
 	}
@@ -160,7 +153,6 @@ class Ball extends Thread {
 			if (y - r <= 0 || y + r >= gb.h) {
 				vy = -vy;
 			}
-
 			// When Ball touch brick
 			for (int i = 0; i < gb.brickperrow; i++) {
 				for (int j = 0; j < gb.brickpercol; j++) {
