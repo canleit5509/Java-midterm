@@ -42,15 +42,13 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		double u, v;
 		do {
 			v = random.nextDouble() * 5 - 2.5;
-			u  = random.nextDouble() * 5 - 2.5;
-			if (v != 0 ) {
-				b = new Ball(350, 680, 13, v ,u , this);
+			u = random.nextDouble() * 5 - 2.5;
+			if (v != 0) {
+				b = new Ball(350, 680, 13, v, u, this);
 				break;
 			}
-		}while(v == 0);
-		
-		
-		
+		} while (v == 0);
+
 		b.start();
 
 		// Create Brick
@@ -111,16 +109,15 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			if (-panel.vx <= 2) {
 				panel.vx -= 2;
 			} else {
-				panel.vx += 0;
+				panel.vx += -0.2;
 			}
-			System.out.println(panel.vx);
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			System.out.println("Right");
 			if (panel.vx <= 2) {
 				panel.vx += 2;
 			} else {
-				panel.vx += 0;
+				panel.vx += 0.2;
 			}
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {
@@ -128,7 +125,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			if (-panel.vx <= 2) {
 				panel.vx -= 2;
 			} else {
-				panel.vx += 0;
+				panel.vx += -0.2;
 			}
 		}
 		if (e.getKeyCode() == KeyEvent.VK_D) {
@@ -136,10 +133,11 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			if (panel.vx <= 2) {
 				panel.vx += 2;
 			} else {
-				panel.vx += 0;
+				panel.vx += 0.2;
 			}
-			System.out.println(panel.vx);
+			
 		}
+		System.out.println(panel.vx);
 		repaint();
 	}
 
@@ -238,13 +236,14 @@ class Ball extends Thread {
 				if (dx * dx + dy * dy <= r * r) {
 					// xu li huong khi va cham vao brick
 					if (x + vx < gb.panel.x) {
-						vx = -(vx + Math.abs(gb.panel.vx) / (vx * vx + vy * vy));
+						vx = -(vx + (gb.panel.vx) / (vx * vx + vy * vy));
 					}
 					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.rec_h) {
-						vy = -Math.abs(vy + Math.abs(gb.panel.vx) / (vx * vx + vy * vy));
+						vy = -Math.abs(vy + (gb.panel.vx) / (vx * vx + vy * vy));
 					}
 				}
 			}
+
 			if (y + vy > gb.panel.y + gb.panel_h) {
 
 				vx = 0;
@@ -300,7 +299,6 @@ class Brick extends Thread {
 		this.exist = true;
 	}
 }
-
 
 // Class Vector
 class MyVector {
