@@ -39,11 +39,12 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		double v;
+		double u, v;
 		do {
 			v = random.nextDouble() * 5 - 2.5;
+			u  = random.nextDouble() * 5 - 2.5;
 			if (v != 0 ) {
-				b = new Ball(350, 680, 13,v , 2.5, this);
+				b = new Ball(350, 680, 13, v ,u , this);
 				break;
 			}
 		}while(v == 0);
