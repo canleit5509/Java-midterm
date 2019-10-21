@@ -32,6 +32,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	boolean checkToStart = false;
 	Color color[] = { Color.BLACK, Color.GRAY, Color.ORANGE, Color.RED, Color.YELLOW, Color.CYAN };
 	boolean checkLife = true;
+	boolean isWin = true;
 	// End Variable
 
 	public GameBreakOut() {
@@ -76,11 +77,12 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.DARK_GRAY);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
-
+		isWin = true;
 		// Set graphics for brick
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
 				if (brick[i][j].exist) {
+					isWin = false;
 					g.setColor(color[j]);
 					g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
 					g.fillRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
@@ -101,13 +103,20 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			g.drawString("Press Any Key To Start", w / 2 - "Press Any Key To Start".length() * 9, h / 2);
 		}
 		// End Game
-		if (checkLife == false) {
+		if (checkLife == false && isWin == false) {
 			g.setFont(new Font("TimesRoman", Font.BOLD, 40));
 			g.setColor(Color.gray);
-			g.drawString("YOU DIED", w / 2 - "YOU DIED".length() * 9, h / 2);
+			g.drawString("YOU LOSE!!!", w / 2 - "YOU LOSE!!!".length() * 9, h / 2);
 			repaint();
 		}
-
+		// Win Game
+		if (isWin) {
+			checkLife = false;
+			g.setFont(new Font("TimesRoman", Font.BOLD, 40));
+			g.setColor(Color.gray);
+			g.drawString("YOU WIN!!!", w / 2 - "YOU WIN!!!".length() * 9, h / 2);
+			repaint();
+		}
 		g1.drawImage(bufImg, 0, 0, this.getWidth(), this.getHeight(), null);
 
 		// To delay
