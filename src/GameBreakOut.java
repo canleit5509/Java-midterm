@@ -44,7 +44,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			v = random.nextDouble() * 5 - 2.5;
 			u = random.nextDouble() * 5 - 2.5;
 			if (v != 0) {
-				b = new Ball(350, 680, 13, v, u, this);
+				b = new Ball(350, 680, 13, v, -1.5, this);
 				break;
 			}
 		} while (v == 0);
@@ -74,7 +74,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.DARK_GRAY);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
-
+		
 		// Set graphics for brick
 		for (int i = 0; i < brickperrow; i++) {
 			for (int j = 0; j < brickpercol; j++) {
@@ -82,6 +82,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 					g.setColor(Color.gray);
 					g.drawRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
 					g.fillRect((int) (brick[i][j].x), (int) (brick[i][j].y), rec_w, rec_h);
+
 				}
 			}
 		}
@@ -119,23 +120,6 @@ public class GameBreakOut extends JFrame implements KeyListener {
 			} else {
 				panel.vx += 0.2;
 			}
-		}
-		if (e.getKeyCode() == KeyEvent.VK_A) {
-			System.out.println("Left");
-			if (-panel.vx <= 2) {
-				panel.vx -= 2;
-			} else {
-				panel.vx += -0.2;
-			}
-		}
-		if (e.getKeyCode() == KeyEvent.VK_D) {
-			System.out.println("Right");
-			if (panel.vx <= 2) {
-				panel.vx += 2;
-			} else {
-				panel.vx += 0.2;
-			}
-			
 		}
 		System.out.println(panel.vx);
 		repaint();
@@ -239,12 +223,12 @@ class Ball extends Thread {
 						vx = -(vx + (gb.panel.vx) / (vx * vx + vy * vy));
 					}
 					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.rec_h) {
-						vy = -Math.abs(vy + (gb.panel.vx) / (vx * vx + vy * vy));
+						vy = -Math.abs(vy);
 					}
 				}
 			}
-
-			if (y + vy > gb.panel.y + gb.panel_h) {
+			// TODO: ENDGAME
+			if (y + vy >= gb.h - gb.panel_h) {
 
 				vx = 0;
 				vy = 0;
@@ -279,7 +263,7 @@ class Panel extends Thread {
 				this.x += vx;
 			}
 			try {
-				Thread.sleep(3);
+				Thread.sleep(2);
 			} catch (InterruptedException e) {
 
 			}
