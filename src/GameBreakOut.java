@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -14,6 +13,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	}
 
 	// Start Variable
+
 	int w = 700;
 	int h = 700;
 	int rec_w = 60;
@@ -28,6 +28,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 	Panel panel;
 	int panel_w = 150;
 	int panel_h = 15;
+
 	// End Variable
 
 	public GameBreakOut() {
@@ -35,21 +36,21 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		this.setSize(w, h);
 		this.setDefaultCloseOperation(3);
 		// Create Panel
+
 		panel = new Panel(350, 680, this);
 		panel.start();
 		// Create Ball
 		Random random = new Random();
-		double v;
+		double u, v;
 		do {
 			v = random.nextDouble() * 5 - 2.5;
+			u  = random.nextDouble() * 5 - 2.5;
 			if (v != 0 ) {
-				b = new Ball(350, 680, 13,v , 2.5, this);
+				b = new Ball(350, 680, 13, v ,u , this);
 				break;
 			}
-		}while(v == 0);
-		
-		
-		
+		}while(v*u != 0);
+
 		b.start();
 
 		// Create Brick
@@ -61,6 +62,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 
 		bufImg = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
 		g = bufImg.getGraphics();
+
 		this.setVisible(true);
 		// Add cac su kien
 		this.addKeyListener(this);
@@ -71,7 +73,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		// Set graphics for panel
-		g.setColor(Color.black);
+		g.setColor(Color.DARK_GRAY);
 		g.drawRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 		g.fillRect((int) (panel.x), (int) (panel.y), panel_w, panel_h);
 
@@ -96,12 +98,12 @@ public class GameBreakOut extends JFrame implements KeyListener {
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
-			// TODO: lam gi do
 		}
 
 		repaint();
 	}
 
+	// TODO: sua lai van toc cua panel
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -112,9 +114,9 @@ public class GameBreakOut extends JFrame implements KeyListener {
 				}else {
 					panel.vx -= 0.2;
 				}
-				
+
 			} else {
-				panel.vx = 0;
+				panel.vx += 0;
 			}
 			System.out.println(panel.vx);
 		}
@@ -127,7 +129,7 @@ public class GameBreakOut extends JFrame implements KeyListener {
 					panel.vx += 0.2;
 				}
 			} else {
-				panel.vx = 0;
+				panel.vx += 0;
 			}
 			System.out.println(panel.vx);
 		}
@@ -176,8 +178,8 @@ class Ball extends Thread {
 					Brick br = gb.brick[i][j];
 					// Xu ly hinh tron cham brick
 					if (br != null && br.exist) {
-						double px = x;
-						double py = y;
+						double px = x + vx;
+						double py = y + vy;
 						if (px < br.x) {
 							px = br.x;
 						}
@@ -206,11 +208,11 @@ class Ball extends Thread {
 					}
 
 				}
-			}
-			
+			}			
 			if (gb.panel != null) {
 				double px = this.x;
 				double py = this.y;
+
 				if (px < gb.panel.x) {
 					px = gb.panel.x;
 				}
@@ -225,27 +227,27 @@ class Ball extends Thread {
 				}
 				double dx = x - px;
 				double dy = y - py;
-
+				// TODO: xu li van toc khi cham vao thanh
 				if (dx * dx + dy * dy <= r * r) {
 					// xu li huong khi va cham vao brick
 					if (x + vx < gb.panel.x) {
-						vx = -vx;
+						vx = -(vx + Math.abs(gb.panel.vx) / (vx * vx + vy * vy));
 					}
 					if (y + vy < gb.panel.y || y + vy > gb.panel.y + gb.panel_h) {
 						vy = -Math.abs(vy);
+
 					}
 				}
 			}
-			// TODO: Neu cham vao bottom -> endgame --> v = 0
-//			if (y > gb.panel.y + gb.panel_h) {
-//				vx = 0;
-//				vy = 0;
-//			}
+			if (y + vy > gb.panel.y + gb.panel_h) {
+
+				vx = 0;
+				vy = 0;
+			}
 			// Delay mot time nho
 			try {
-				Thread.sleep(6);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
-				// TODO: handle exception
 			}
 			//
 		}
@@ -256,8 +258,6 @@ class Ball extends Thread {
 class Panel extends Thread {
 	double x, y;
 	GameBreakOut gb;
-	int panel_w = 100;
-	int panel_h = 30;
 	double vx;
 
 	public Panel(double x, double y, GameBreakOut gb) {
@@ -269,12 +269,14 @@ class Panel extends Thread {
 
 	public void run() {
 		while (true) {
-			this.x += vx;
-
+			// dieu kien dung cua panel
+			if (this.x + this.vx > 0 && this.x + this.vx + gb.panel_w < gb.w) {
+				this.x += vx;
+			}
 			try {
-				Thread.sleep(6);
+				Thread.sleep(3);
 			} catch (InterruptedException e) {
-				// TODO: handle exception
+
 			}
 		}
 	}
